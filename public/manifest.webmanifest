@@ -1,0 +1,10 @@
+{
+  "name": "Trio",
+  "short_name": "Trio",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#14213d",
+  "theme_color": "#14213d",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

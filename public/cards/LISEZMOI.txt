@@ -1,0 +1,5 @@
+Images de cartes personnalisées (facultatif)
+
+Dépose ici 1.png, 2.png, ... 12.png (faces) et back.png (dos).
+Si 1.png existe, le jeu utilise ces images à la place des cartes dessinées.
+Format conseillé : portrait, ratio 7:10 (par exemple 350 x 500 px).

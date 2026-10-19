@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#14213d" />
+  <title>Trio</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Accueil -->
+  <section id="home" class="screen">
+    <div class="home-card">
+      <div class="logo" aria-hidden="true"><span></span><span></span><span></span></div>
+      <h1>Trio</h1>
+      <p class="tagline">Trouve trois cartes identiques avant les autres.</p>
+
+      <label class="field">
+        <span>Pseudo</span>
+        <input id="nameInput" maxlength="16" autocomplete="nickname" placeholder="Ton pseudo" />
+      </label>
+
+      <button id="createBtn" class="btn primary big">Créer une partie</button>
+
+      <div class="join-row">
+        <input id="codeInput" inputmode="numeric" maxlength="4" placeholder="Code" aria-label="Code de la partie" />
+        <button id="joinBtn" class="btn">Rejoindre</button>
+      </div>
+
+      <button class="btn ghost rules-open">Règles du jeu</button>
+    </div>
+  </section>
+
+  <!-- Salon -->
+  <section id="lobby" class="screen hidden">
+    <header class="topbar">
+      <button class="btn ghost small" id="lobbyQuit">Quitter</button>
+      <div class="topbar-title">Salon</div>
+      <button class="btn ghost small rules-open">Règles</button>
+    </header>
+    <div class="lobby-body">
+      <div class="code-box">
+        <div class="code-label">Code de la partie</div>
+        <div id="lobbyCode" class="code"></div>
+        <button id="copyLink" class="btn small">Copier le lien</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Joueurs <span id="playerCount"></span></h2></div>
+        <ul id="memberList" class="members"></ul>
+        <div id="botAdd" class="bot-add">
+          <select id="botLevel" aria-label="Niveau du bot">
+            <option value="facile">Bot facile</option>
+            <option value="normal" selected>Bot normal</option>
+            <option value="expert">Bot expert</option>
+          </select>
+          <button id="addBotBtn" class="btn">+ Ajouter un bot</button>
+        </div>
+      </div>
+
+      <div class="panel" id="optionsPanel">
+        <div class="panel-head"><h2>Options</h2></div>
+        <div class="opt-row">
+          <span>Mode</span>
+          <div class="seg" id="modeSeg">
+            <button data-mode="simple">Simple</button>
+            <button data-mode="spicy">Piquant</button>
+          </div>
+        </div>
+        <p class="opt-hint" id="modeHint"></p>
+        <div class="opt-row">
+          <span>Équipes de 2 <small>(4 ou 6 joueurs)</small></span>
+          <label class="switch"><input type="checkbox" id="teamsToggle" /><span></span></label>
+        </div>
+        <button id="shuffleBtn" class="btn small ghost">Mélanger les places</button>
+      </div>
+
+      <button id="startBtn" class="btn primary big">Lancer la partie</button>
+      <p id="lobbyWait" class="muted center"></p>
+    </div>
+  </section>
+
+  <!-- Partie -->
+  <section id="game" class="screen hidden">
+    <header class="topbar">
+      <button class="btn ghost small" id="gameQuit">Quitter</button>
+      <div class="topbar-title"><span id="gameCode"></span> <span id="modeChip" class="chip"></span></div>
+      <button class="btn ghost small rules-open">Règles</button>
+    </header>
+
+    <div id="status" class="status"></div>
+
+    <div id="opponents" class="opponents"></div>
+
+    <div class="table">
+      <div id="revealed" class="revealed"></div>
+      <div id="middle" class="middle"></div>
+    </div>
+
+    <div id="me" class="me"></div>
+
+    <details class="log">
+      <summary>Historique</summary>
+      <ol id="logList"></ol>
+    </details>
+  </section>
+
+  <!-- Fin de partie -->
+  <div id="endModal" class="modal hidden">
+    <div class="modal-card">
+      <div id="endTitle" class="end-title"></div>
+      <div id="endText" class="end-text"></div>
+      <div id="endHands" class="end-hands"></div>
+      <div class="modal-actions">
+        <button id="replayBtn" class="btn primary">Rejouer</button>
+        <button id="lobbyBtn" class="btn">Retour au salon</button>
+        <button id="endClose" class="btn ghost">Voir le plateau</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Règles -->
+  <div id="rulesModal" class="modal hidden">
+    <div class="modal-card rules">
+      <h2>Règles de Trio</h2>
+      <p><b>But :</b> réunir des trios, c'est-à-dire trois cartes identiques. Il y a 36 cartes : les nombres 1 à 12, trois fois chacun.</p>
+      <p><b>Mise en place :</b> chaque joueur reçoit des cartes qu'il garde triées de la plus petite à la plus grande. Les autres cartes sont posées face cachée au milieu.</p>
+      <table class="setup">
+        <tr><th>Joueurs</th><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+        <tr><th>Main</th><td>9</td><td>7</td><td>6</td><td>5</td></tr>
+        <tr><th>Milieu</th><td>9</td><td>8</td><td>6</td><td>6</td></tr>
+      </table>
+      <p><b>À ton tour,</b> révèle les cartes une par une. Chaque carte révélée est :</p>
+      <ul>
+        <li>une carte face cachée du milieu,</li>
+        <li>ou la <b>plus petite</b> ou la <b>plus grande</b> carte de la main d'un joueur, toi compris.</li>
+      </ul>
+      <p>Tu continues tant que les cartes sont identiques. Trois cartes identiques : tu gagnes le trio. Dès que deux nombres différents apparaissent, ton tour s'arrête et les cartes reprennent leur place. Retiens bien ce qui a été montré !</p>
+      <p><b>Victoire, mode simple :</b> 3 trios, ou le trio de 7.</p>
+      <p><b>Victoire, mode piquant :</b> 2 trios liés, ou le trio de 7. Deux trios sont liés si leur somme ou leur différence vaut 7 (par exemple 2 et 5, ou 2 et 9). Les nombres liés sont rappelés en bas des cartes.</p>
+      <p><b>Équipes (4 ou 6 joueurs) :</b> équipes de 2 assises face à face, toutes les cartes sont distribuées. Les partenaires échangent une carte au début, puis chaque fois qu'une équipe adverse gagne un trio. Les trios de l'équipe comptent ensemble.</p>
+      <div class="modal-actions"><button class="btn primary rules-close">J'ai compris</button></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <div id="offline" class="offline hidden">Connexion perdue, reconnexion…</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
